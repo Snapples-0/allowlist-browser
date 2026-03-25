@@ -42,7 +42,18 @@ Edit `assets/allowlist.json` to add or remove allowed domains:
 }
 ```
 
-The browser matches by **domain** — subdomains are included automatically (e.g. `github.com` also allows `gist.github.com`).
+The browser uses **strict exact-match** domain checking — subdomains are **not** allowed automatically. Each domain and subdomain must be listed explicitly.
+
+For example, adding `github.com` will **not** allow `gist.github.com`. To allow both, list them separately:
+
+```json
+{
+  "allowed_domains": [
+    "github.com",
+    "gist.github.com"
+  ]
+}
+```
 
 ## Project Structure
 
