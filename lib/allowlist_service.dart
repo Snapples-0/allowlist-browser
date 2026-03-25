@@ -17,15 +17,13 @@ class AllowlistService {
 
   List<String> get allowedDomains => List.unmodifiable(_allowedDomains);
 
-  /// Returns true if the URL's host matches any allowed domain (including subdomains).
+  /// Returns true only if the URL's host exactly matches an allowed domain.
+  /// Subdomains are NOT allowed unless explicitly listed.
   bool isAllowed(String url) {
     try {
       final uri = Uri.parse(url);
       final host = uri.host.toLowerCase();
-      return _allowedDomains.any((domain) {
-        final d = domain.toLowerCase();
-        return host == d || host.endsWith('.$d');
-      });
+      return _allowedDomains.any((domain) => host == domain.toLowerCase());
     } catch (_) {
       return false;
     }
