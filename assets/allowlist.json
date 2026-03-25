@@ -1,0 +1,9 @@
+{
+  "allowed_domains": [
+    "google.com",
+    "github.com",
+    "flutter.dev",
+    "wikipedia.org",
+    "stackoverflow.com"
+  ]
+}

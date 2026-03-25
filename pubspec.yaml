@@ -1,0 +1,16 @@
+name: allowlist_browser
+description: A web browser that only allows navigation to allowlisted websites.
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  webview_flutter: ^4.7.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/allowlist.json
