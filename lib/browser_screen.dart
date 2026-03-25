@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'allowlist_service.dart';
 import 'blocked_screen.dart';
+import 'parent_admin_screen.dart';
 
 class BrowserScreen extends StatefulWidget {
   const BrowserScreen({super.key});
@@ -21,9 +22,7 @@ class _BrowserScreenState extends State<BrowserScreen> {
   @override
   void initState() {
     super.initState();
-    _allowlist.load().then((_) {
-      setState(() => _loaded = true);
-    });
+    _allowlist.load().then((_) => setState(() => _loaded = true));
 
     _webViewController = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -47,6 +46,12 @@ class _BrowserScreenState extends State<BrowserScreen> {
       );
   }
 
+  @override
+  void dispose() {
+    _allowlist.dispose();
+    super.dispose();
+  }
+
   void _navigate(String input) {
     String url = input.trim();
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
@@ -61,17 +66,6 @@ class _BrowserScreenState extends State<BrowserScreen> {
     }
     setState(() => _isBlocked = false);
     _webViewController.loadRequest(Uri.parse(url));
-  }
-
-  void _showManageAllowlist() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) => _AllowlistManager(
-        allowlist: _allowlist,
-        onChanged: () => setState(() {}),
-      ),
-    );
   }
 
   @override
@@ -90,84 +84,23 @@ class _BrowserScreenState extends State<BrowserScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.list),
-            tooltip: 'Manage Allowlist',
-            onPressed: _showManageAllowlist,
+            icon: const Icon(Icons.admin_panel_settings),
+            tooltip: 'Parent Controls',
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ParentAdminScreen()),
+            ),
           ),
         ],
       ),
       body: !_loaded
           ? const Center(child: CircularProgressIndicator())
           : _isBlocked
-              ? BlockedScreen(blockedUrl: _blockedUrl, onGoBack: () => setState(() => _isBlocked = false))
+              ? BlockedScreen(
+                  blockedUrl: _blockedUrl,
+                  onGoBack: () => setState(() => _isBlocked = false),
+                )
               : WebViewWidget(controller: _webViewController),
-    );
-  }
-}
-
-class _AllowlistManager extends StatefulWidget {
-  final AllowlistService allowlist;
-  final VoidCallback onChanged;
-  const _AllowlistManager({required this.allowlist, required this.onChanged});
-
-  @override
-  State<_AllowlistManager> createState() => _AllowlistManagerState();
-}
-
-class _AllowlistManagerState extends State<_AllowlistManager> {
-  final _addController = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    final domains = widget.allowlist.allowedDomains;
-    return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Padding(
-            padding: EdgeInsets.all(16),
-            child: Text('Manage Allowlist', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          ),
-          ...domains.map((d) => ListTile(
-                title: Text(d),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () {
-                    widget.allowlist.removeDomain(d);
-                    widget.onChanged();
-                    setState(() {});
-                  },
-                ),
-              )),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _addController,
-                    decoration: const InputDecoration(
-                      hintText: 'Add domain (e.g. example.com)',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: () {
-                    widget.allowlist.addDomain(_addController.text);
-                    _addController.clear();
-                    widget.onChanged();
-                    setState(() {});
-                  },
-                  child: const Text('Add'),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
