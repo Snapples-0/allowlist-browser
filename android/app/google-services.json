@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "265912103283",
+    "project_id": "restricted-browser",
+    "storage_bucket": "restricted-browser.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:265912103283:android:8b1d8a437805065a541506",
+        "android_client_info": {
+          "package_name": "com.example.allowlist_browser"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "265912103283-jeurvatveoakp403m1s3a29q65qa6eeb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8h-VneuQS2ZGuJvXdC2skN1E6G-Ce3vE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "265912103283-jeurvatveoakp403m1s3a29q65qa6eeb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
