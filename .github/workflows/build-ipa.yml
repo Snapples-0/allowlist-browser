@@ -25,9 +25,12 @@ jobs:
       - name: Generate iOS project structure
         run: |
           if [ ! -f ios/Podfile ]; then
-            echo "ios/Podfile not found – generating iOS platform files..."
-            flutter create --platforms=ios --project-name=allowlist_browser --no-pub .
-            echo "iOS platform files generated."
+            echo "ios/Podfile not found – regenerating Flutter project platform files..."
+            flutter --version
+            # Remove any accidental root-level iOS host artifacts from prior incorrect generation
+            rm -rf Runner Runner.xcodeproj Runner.xcworkspace RunnerTests
+            flutter create .
+            echo "Flutter platform files regenerated."
           else
             echo "ios/Podfile already exists – skipping flutter create."
           fi
