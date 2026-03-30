@@ -22,6 +22,16 @@ jobs:
           channel: stable
           cache: true
 
+      - name: Generate iOS project structure
+        run: |
+          if [ ! -d ios ]; then
+            echo "ios/ directory not found – generating iOS platform files..."
+            flutter create --platforms=ios --project-name=allowlist_browser --no-pub .
+            echo "iOS platform files generated."
+          else
+            echo "ios/ directory already exists – skipping flutter create."
+          fi
+
       - name: Install dependencies
         run: flutter pub get
 
