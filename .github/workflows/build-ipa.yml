@@ -32,6 +32,41 @@ jobs:
             echo "ios/ directory already exists – skipping flutter create."
           fi
 
+      - name: Patch iOS Podfile
+        run: |
+          python3 - <<'PYEOF'
+          import re, sys
+
+          with open('ios/Podfile', 'r') as f:
+              content = f.read()
+
+          # Uncomment/set platform to 12.0, anchored to start of line
+          content = re.sub(r'^#?\s*platform :ios,\s*\'[^\']*\'', "platform :ios, '12.0'", content, flags=re.MULTILINE)
+
+          # Inject deployment-target enforcement and -G flag stripping into post_install
+          old_snippet = "    flutter_additional_ios_build_settings(target)"
+          new_snippet = """\
+              flutter_additional_ios_build_settings(target)
+              target.build_configurations.each do |config|
+                config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+                %w[OTHER_CFLAGS OTHER_CPLUSPLUSFLAGS].each do |key|
+                  flags = config.build_settings[key]
+                  next unless flags
+                  flags = flags.split(' ') if flags.is_a?(String)
+                  config.build_settings[key] = flags.reject { |f| f == '-G' }
+                end
+              end"""
+
+          if old_snippet not in content:
+              print("WARNING: expected snippet not found in Podfile; -G stripping may not apply", file=sys.stderr)
+          else:
+              content = content.replace(old_snippet, new_snippet, 1)
+              print("Podfile patched: deployment target set to 12.0 and -G flag stripping added.")
+
+          with open('ios/Podfile', 'w') as f:
+              f.write(content)
+          PYEOF
+
       - name: Install dependencies
         run: flutter pub get
 
